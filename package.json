@@ -1,0 +1,92 @@
+{
+  "name": "companion",
+  "displayName": "pkgwarden",
+  "description": "Keeps your VS Code extensions on versions pkgwarden gate has cleared.",
+  "publisher": "pkgwarden",
+  "version": "0.1.0",
+  "license": "MIT",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pkgwarden/companion"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "packageManager": "pnpm@9.15.9",
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "pkgwarden.installExtension",
+        "title": "Install extension…",
+        "category": "pkgwarden"
+      },
+      {
+        "command": "pkgwarden.signIn",
+        "title": "Sign in with a gate token",
+        "category": "pkgwarden"
+      },
+      {
+        "command": "pkgwarden.signOut",
+        "title": "Sign out",
+        "category": "pkgwarden"
+      },
+      {
+        "command": "pkgwarden.syncNow",
+        "title": "Sync policy now",
+        "category": "pkgwarden"
+      }
+    ],
+    "configuration": {
+      "title": "pkgwarden",
+      "properties": {
+        "pkgwarden.apiUrl": {
+          "type": "string",
+          "default": "https://index.pkgwarden.com",
+          "description": "Base URL of the pkgwarden gate API."
+        },
+        "pkgwarden.remediation": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "notify"
+          ],
+          "default": "auto",
+          "enumDescriptions": [
+            "Roll back or remove an installed extension version that gate has withheld, then notify.",
+            "Only notify when gate withholds an installed extension version."
+          ],
+          "description": "What to do when gate withholds a version you have installed."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "lint": "biome check .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "build": "node esbuild.mjs",
+    "package": "vsce package --no-dependencies --out dist/pkgwarden-companion.vsix",
+    "vscode:prepublish": "node esbuild.mjs",
+    "uat": "node esbuild.mjs && node uat/build.mjs && node uat/dist/runner.cjs"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.12",
+    "@types/node": "^25.0.2",
+    "@types/vscode": "~1.90.0",
+    "@vscode/test-electron": "^3.1.0",
+    "@vscode/vsce": "^3.6.0",
+    "esbuild": "^0.25.0",
+    "ovsx": "^0.10.6",
+    "typescript": "~5.8.3",
+    "vitest": "^2.1.8"
+  }
+}

@@ -1,0 +1,14 @@
+.vscode/**
+node_modules/**
+src/**
+test/**
+dist/*.vsix
+PUBLISH.md
+.github/**
+pnpm-lock.yaml
+biome.json
+esbuild.mjs
+tsconfig.json
+vitest.config.ts
+**/*.map
+uat/**

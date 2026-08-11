@@ -1,0 +1,75 @@
+name: Release pkgwarden companion
+
+# Dispatch-only on purpose: the monorepo mirror force-pushes main and the companion-v* tag
+# on every run, including snapshot-review runs. A tag-push trigger would publish those too.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing git tag to publish (must match companion-v*)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+# Never cancel a publish in flight: a half-cancelled run can leave one registry published
+# and the other not, and the second attempt then fails on the already-published version.
+concurrency:
+  group: release-companion-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build and publish companion VSIX
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.tag }}
+
+      - uses: pnpm/action-setup@v5
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck and test
+        run: |
+          pnpm run typecheck
+          pnpm run test:run
+
+      - name: Build VSIX
+        run: pnpm run package
+
+      - name: Publish to VS Marketplace
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          set -euo pipefail
+          if [ -z "${VSCE_PAT:-}" ]; then
+            echo "VSCE_PAT not configured — skipping Microsoft Marketplace publish."
+            echo "See PUBLISH.md for setup."
+            exit 0
+          fi
+          pnpm exec vsce publish --no-dependencies \
+            --packagePath dist/pkgwarden-companion.vsix
+
+      - name: Publish to Open VSX
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          set -euo pipefail
+          if [ -z "${OVSX_PAT:-}" ]; then
+            echo "OVSX_PAT not configured — skipping Open VSX publish."
+            echo "Open VSX publication is load-bearing for catalog crawl + self-allow."
+            echo "See PUBLISH.md for setup."
+            exit 0
+          fi
+          pnpm exec ovsx publish dist/pkgwarden-companion.vsix
