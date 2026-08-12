@@ -13,6 +13,7 @@ import {
 interface Manifest {
   name: string
   publisher: string
+  version: string
   activationEvents: string[]
   engines: { vscode: string }
   repository: { type: string; url: string }
@@ -75,6 +76,14 @@ describe('the extension manifest', () => {
 
   it('ships with zero runtime dependencies', () => {
     expect(manifest.dependencies).toBeUndefined()
+  })
+
+  it('requires the vscode release that introduced extensions.allowed', () => {
+    expect(manifest.engines.vscode).toBe('^1.96.0')
+  })
+
+  it('bumps the package version for mirror republish', () => {
+    expect(manifest.version).toBe('0.1.1')
   })
 
   it('types the api at the engine floor, so no newer api can typecheck its way in', () => {

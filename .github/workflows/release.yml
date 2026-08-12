@@ -1,7 +1,8 @@
 name: Release pkgwarden companion
 
-# Dispatch-only on purpose: the monorepo mirror force-pushes main and the companion-v* tag
-# on every run, including snapshot-review runs. A tag-push trigger would publish those too.
+# Dispatch-only on purpose: the monorepo mirror pushes the companion-v* tag on every run
+# that changes the snapshot, including snapshot-review runs (skip_release_build). A
+# tag-push trigger would publish those too, and race the mirror's own dispatch.
 on:
   workflow_dispatch:
     inputs:

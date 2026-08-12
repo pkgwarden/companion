@@ -3,7 +3,7 @@
   "displayName": "pkgwarden",
   "description": "Keeps your VS Code extensions on versions pkgwarden gate has cleared.",
   "publisher": "pkgwarden",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "icon": "icon.png",
   "repository": {
@@ -11,7 +11,7 @@
     "url": "https://github.com/pkgwarden/companion"
   },
   "engines": {
-    "vscode": "^1.90.0"
+    "vscode": "^1.96.0"
   },
   "packageManager": "pnpm@9.15.9",
   "categories": [
@@ -81,7 +81,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.3.12",
     "@types/node": "^25.0.2",
-    "@types/vscode": "~1.90.0",
+    "@types/vscode": "~1.96.0",
     "@vscode/test-electron": "^3.1.0",
     "@vscode/vsce": "^3.6.0",
     "esbuild": "^0.25.0",
